@@ -43,7 +43,7 @@ function(input, output, session) {
                      fluidRow(
                        div(class = "col-md-12 col-lg-10", 
                            box(title = "Barchart gemiddelde uitkomst per domein", status = "primary", solidHeader = TRUE, width = "100%",
-                               plotlyOutput("barchartPlot", height = 600)
+                               plotlyOutput("barchartPlot", height = 500)
                            )
                        )
                      ),
@@ -183,17 +183,25 @@ function(input, output, session) {
     
     if (!is.null(dt)) {
       dt = dt[prefix == input$prefix][, prefix := NULL]
+      
+      f1 <- list(
+        family = "Arial, sans-serif",
+        size = 10,
+        color = "black"
+      )
+      
       p <- plot_ly(data = dt)
       
       for (i in 1:length(domains)){
-        p = p %>% add_trace( x = dt[[domains[i]]], y = ~Domeinen, type = 'bar', orientation = 'h', name = domains[i],
+        p = p %>% add_trace( x = ~Domeinen, y = dt[[domains[i]]], type = 'bar', name = domains[i], #orientation = 'h',
                           marker = list(color = colors[i],
                                         line = list(color = colors[i])))
       }
       p = p %>%
         layout(barmode = 'stack',
-               xaxis = list(title = "", domain = c(0.4, 1), range = c(0, 15)),
-               yaxis = list(title =""))
+               xaxis = list(title = "", categoryarray = ~Domeinen, categoryorder = "array", tickfont = f1, tickangle = 90 ),
+               yaxis = list(title ="", domain = c(0.5, 1), range = c(0, 15), tickfont = f1 ),
+               autosize = F, height = 500, width = 1000)
       
     } else {
       p <- plot_ly()
